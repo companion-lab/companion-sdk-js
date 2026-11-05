@@ -11,5 +11,15 @@
     "./react-dom": "./react-dom.js",
     "./react-dom/client": "./react-dom.js"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/companion-lab/companion-sdk-js.git"
+  },
+  "keywords": [
+    "companion",
+    "plugin",
+    "sdk",
+    "tauri"
+  ],
   "license": "MIT"
 }
