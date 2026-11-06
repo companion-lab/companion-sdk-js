@@ -1,5 +1,5 @@
 {
-  "name": "@companion/plugin",
+  "name": "@companion-lab/plugin",
   "version": "0.1.0",
   "description": "SDK for writing companion-tauri plugin frontends (React components registered through a scoped PluginContext).",
   "type": "module",
@@ -21,5 +21,21 @@
     "sdk",
     "tauri"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "files": [
+    "index.ts",
+    "react.js",
+    "react-dom.js",
+    "jsx-runtime.js",
+    "LICENSE",
+    "README.md"
+  ],
+  "peerDependencies": {
+    "react": ">=18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  }
 }
