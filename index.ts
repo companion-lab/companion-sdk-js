@@ -338,6 +338,9 @@ declare global {
         tools?: {
           get?: () => Map<string, ToolContribution>;
         };
+        systemPrompts?: {
+          get?: () => string[];
+        };
       }
     | undefined;
 }
