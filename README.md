@@ -78,10 +78,23 @@ that answers the `notes.*` methods.
 | `ctx.backend`      | `call(method, payload)` into the plugin's Rust backend.             |
 | `ctx.events`       | Namespaced pub/sub (`plugin:{id}:{event}`) across windows.          |
 | `ctx.storage`      | Namespaced key/value store persisted by the host.                   |
+| `ctx.window`       | Control the companion window: position/snap, size, always-on-top, click-through, move/resize events. Requires the `"window"` permission. |
 | `ctx.avatar`       | Drive the live avatar (emotions, motions, model loads) or provide the engine side. |
 | `ctx.services`     | Publish/consume TTS & STT providers.                                |
 | `ctx.secrets`      | OS keychain scoped to the plugin.                                   |
 | `ctx.ui`           | The host's shared UI kit (buttons, modals, cards …).                |
+
+### The `window` permission
+
+Declare `"window"` in `manifest.json` permissions to get `ctx.window`:
+
+```json
+{ "permissions": ["storage", "events", "window"] }
+```
+
+Without it every `ctx.window` method throws. Window changes are runtime-only:
+the user's **Settings → General** preferences (position, always-on-top,
+click-through, accent) win at the next app start.
 
 Disabling or uninstalling a plugin removes all of its contributions and
 service providers live — no restart needed for frontend surfaces.
