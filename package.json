@@ -1,6 +1,6 @@
 {
   "name": "@companion-lab/plugin",
-  "version": "0.1.0",
+  "version": "0.3.0",
   "description": "SDK for writing companion-tauri plugin frontends (React components registered through a scoped PluginContext).",
   "type": "module",
   "main": "index.ts",
