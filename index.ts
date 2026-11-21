@@ -277,6 +277,9 @@ export type ServicesSurface = {
   registerStt: (provider: SttProvider) => void;
   tts: () => TtsProvider;
   stt: () => SttProvider | null;
+  /** Subscribe to provider registrations/removals (takeover stack changes
+   *  included). Returns the unsubscribe function. */
+  onProvidersChanged: (listener: () => void) => () => void;
 };
 
 export type SecretsSurface = {
