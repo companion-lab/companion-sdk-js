@@ -81,6 +81,7 @@ that answers the `notes.*` methods.
 | `ctx.window`       | Control the companion window: position/snap, size, always-on-top, click-through, move/resize events. Requires the `"window"` permission. |
 | `ctx.avatar`       | Drive the live avatar (emotions, motions, model loads) or provide the engine side. |
 | `ctx.services`     | Publish/consume TTS & STT providers.                                |
+| `ctx.capabilities` | Publish/consume named capabilities with other plugins (see below). Requires the `"capabilities"` permission; probe on older hosts. |
 | `ctx.secrets`      | OS keychain scoped to the plugin.                                   |
 | `ctx.ui`           | The host's shared UI kit (buttons, modals, cards …).                |
 
@@ -96,8 +97,66 @@ Without it every `ctx.window` method throws. Window changes are runtime-only:
 the user's **Settings → General** preferences (position, always-on-top,
 click-through, accent) win at the next app start.
 
-Disabling or uninstalling a plugin removes all of its contributions and
-service providers live — no restart needed for frontend surfaces.
+### Plugin-to-plugin capabilities
+
+`ctx.capabilities` lets plugins share functionality directly. A plugin
+publishes named capability providers; other plugins discover and call them
+in-process. Names are namespaced by the owning plugin id (`"<pluginId>.<name>"`,
+enforced) so a plugin cannot spoof another's capability — `vision.capture`
+can only ever be published by the vision plugin.
+
+Declare `"capabilities"` in `manifest.json` permissions to use it (both
+publishing and consuming — consuming another plugin's capability is a
+privilege grant):
+
+```json
+{ "permissions": ["storage", "events", "capabilities"] }
+```
+
+Publishing (the provider methods' payloads/results are whatever the plugin
+chooses — e.g. a vision plugin returning `companion_media` envelopes):
+
+```ts
+export default definePlugin((ctx) => {
+  ctx.capabilities?.provide("vision.capture", {
+    description: "Screen/camera frame capture and ambient audio",
+    methods: {
+      screen: (payload) => ctx.backend.call("capture_screen", payload),
+      camera: (payload) => ctx.backend.call("capture_camera", payload),
+      listen: (payload) => ctx.backend.call("listen", payload),
+    },
+  });
+});
+```
+
+Consuming (declare the expected shape locally; `consume` returns null while
+the provider plugin is disabled or absent — subscribe to `onChanged` to
+track it live):
+
+```ts
+type VisionCapture = {
+  screen: (p?: unknown) => Promise<unknown>;
+};
+
+const vision = ctx.capabilities?.consume<VisionCapture>("vision.capture");
+if (vision) {
+  const result = await vision.methods.screen({ max_width: 1280 });
+}
+```
+
+Rust backends can publish capabilities too: `ctx.capabilities().provide("…")`
+from the plugin's Rust `init` (requires the Rust SDK ≥ 0.5 and the
+`"capabilities"` permission). The backend answers calls as
+`handle("capability_call", {"capability", "method", "payload"})`. From a
+frontend, `ctx.capabilities.callCapability(name, method, payload)` reaches
+backend-owned capabilities through the host (frontend-published providers
+answer in-process first), and `ctx.capabilities.listRemote()` lists what
+backends have published. Probe these with
+`typeof ctx.capabilities?.callCapability === "function"` on older hosts.
+
+Disabling or uninstalling a plugin removes all of its contributions,
+service providers, and capability providers live — no restart needed for
+frontend surfaces.
 
 ## Building
 
