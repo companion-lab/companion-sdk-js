@@ -419,7 +419,7 @@ export interface PluginContext {
     registerWidget: (widget: WidgetContribution) => void;
     overrideWidget: (targetId: WidgetTargetId, component: ComponentType) => void;
     registerContextMenuItem: (item: ContextMenuItemContribution) => void;
-    /** Optional (added 0.3.3): persist the host ui-prefs blob, apply it to
+    /** Optional (added 0.5.0): persist the host ui-prefs blob, apply it to
      *  this context immediately (no event-echo wait), and broadcast
      *  "ui-prefs-changed" so other windows/tabs follow. Probe with
      *  `typeof ctx.main.setUiPrefs === "function"` on older hosts. */
