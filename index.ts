@@ -225,6 +225,10 @@ export type AvatarEngineHandlers = {
   ) => void;
   describeCapabilities?: () => AvatarCapabilities;
   pixelAlphaAt?: (cssX: number, cssY: number) => number | null;
+  /** Carry reaction while the window is dragged: normalized lean target
+   *  (+x = screen right, +y = screen down), or null on release (settle back).
+   *  Streamed per window-move event; the engine smooths per frame. */
+  setCarry?: (lean: { x: number; y: number } | null) => void;
 };
 
 export type TtsStream = {
